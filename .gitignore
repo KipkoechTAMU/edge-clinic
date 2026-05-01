@@ -10,3 +10,6 @@ __pycache__/
 .env
 results/logs/*.out
 results/
+data/processed/embeddings.npy
+data/processed/embedding_index.csv
+data/processed/faiss.index
