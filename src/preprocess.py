@@ -55,7 +55,7 @@ FACILITY_MAP = {
 }
 
 # Medical abbreviation expansion
-# Built from observations in the dataset
+# Built from observations in the dataset — expand as you encounter more
 ABBREV_MAP = {
     r"\bdka\b": "diabetic ketoacidosis",
     r"\bpud\b": "peptic ulcer disease",
@@ -199,24 +199,26 @@ def preprocess(df: pd.DataFrame, split: str) -> tuple[pd.DataFrame, pd.DataFrame
         print(f"  [WARN] Missing expected columns: {missing}")
     df = df[existing_keep].copy()
 
-    # --- Drop rows with missing Prompt or Clinician ---
+    # --- Drop rows with missing Prompt ---
     before = len(df)
-    df = df.dropna(subset=["Prompt", "Clinician"])
+    drop_subset = ["Prompt"] + (["Clinician"] if "Clinician" in df.columns else [])
+    df = df.dropna(subset=drop_subset)
     dropped = before - len(df)
     if dropped:
         print(f"  [WARN] Dropped {dropped} rows with missing Prompt or Clinician")
 
     # --- Clean text ---
     df["prompt_clean"] = df["Prompt"].apply(clean_text)
-    df["clinician_clean"] = df["Clinician"].apply(clean_text)
+    df["clinician_clean"] = df["Clinician"].apply(clean_text) if "Clinician" in df.columns else ""
 
     # --- Build model input (prefix + prompt) ---
     df["model_input"] = df.apply(build_model_input, axis=1)
 
-    # --- Validate no empty targets ---
-    empty_targets = (df["clinician_clean"].str.strip() == "").sum()
-    if empty_targets:
-        print(f"  [WARN] {empty_targets} rows have empty Clinician response after cleaning")
+    # --- Validate no empty targets (train only) ---
+    if "Clinician" in df.columns:
+        empty_targets = (df["clinician_clean"].str.strip() == "").sum()
+        if empty_targets:
+            print(f"  [WARN] {empty_targets} rows have empty Clinician response after cleaning")
 
     # --- Final column selection ---
     clean_df = df[[

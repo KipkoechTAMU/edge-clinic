@@ -1,0 +1,11 @@
+data/raw/
+data/processed/
+data/augmented/
+checkpoints/
+*.pt
+*.bin
+*.onnx
+__pycache__/
+*.egg-info/
+.env
+results/logs/*.out
