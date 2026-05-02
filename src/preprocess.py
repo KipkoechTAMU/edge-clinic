@@ -46,12 +46,22 @@ BASELINE_COLS = [
 
 # Facility type normalization map
 # Maps raw Excel values -> clean token used in model prefix
+
+
 FACILITY_MAP = {
+    # train values
     "sub county hospitals and nursing homes": "sub_county_hospital",
     "national referral hospitals": "national_referral_hospital",
     "county referral hospitals": "county_referral_hospital",
     "primary care": "primary_care",
     "dispensaries and health centres": "dispensary_health_centre",
+    # test values
+    "sub-county hospitals and nursing homes": "sub_county_hospital",
+    "health centres": "health_centre",
+    "health centers": "health_centre",
+    "dispensaries and private clinics": "dispensary_health_centre",
+    "county hospitals": "county_referral_hospital",
+    "community health centers": "community_health_centre",
 }
 
 # Medical abbreviation expansion
@@ -139,7 +149,7 @@ def build_prefix(facility: str, experience: int | float) -> str:
     try:
         exp_str = f"{int(experience)} years"
     except (ValueError, TypeError):
-        exp_str = str(experience)
+        exp_str = "unknown"
     return f"facility: {facility_clean} | experience: {exp_str} | "
 
 
