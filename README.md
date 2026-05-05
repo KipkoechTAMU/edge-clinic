@@ -42,7 +42,7 @@ edge-clinic/
 ## Setup
 
 ```bash
-git clone https://github.com/yourusername/edge-clinic.git
+git clone https://github.com/KipkoechTAMU/edge-clinic.git
 cd edge-clinic
 pip install -r requirements.txt
 ```
